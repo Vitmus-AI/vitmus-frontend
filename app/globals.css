@@ -1,27 +1,66 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer base {
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+  }
+  :root {
+    --background: #F0FDF4;
+    --foreground: #0D1B12;
+    --card: #FFFFFF;
+    --card-foreground: #0D1B12;
+    --popover: #FFFFFF;
+    --popover-foreground: #0D1B12;
+    --primary: #22C55E;
+    --primary-foreground: #FFFFFF;
+    --secondary: #F9FAFB;
+    --secondary-foreground: #0D1B12;
+    --muted: #F3F4F6;
+    --muted-foreground: #6B7280;
+    --accent: #F0FDF4;
+    --accent-foreground: #0D1B12;
+    --destructive: #EF4444;
+    --border: #E5E7EB;
+    --input: #E5E7EB;
+    --ring: #22C55E;
+    --chart-1: #22C55E;
+    --chart-2: #3B82F6;
+    --chart-3: #F97316;
+    --chart-4: #8B5CF6;
+    --chart-5: #16A34A;
+    --radius: 0.75rem;
+    --sidebar: #0D1B12;
+    --sidebar-foreground: #FFFFFF;
+    --sidebar-primary: #22C55E;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #1F2D23;
+    --sidebar-accent-foreground: #FFFFFF;
+    --sidebar-border: #1F2D23;
+    --sidebar-ring: #22C55E;
+    --vitmus-green: #22C55E;
+    --vitmus-green-dark: #16A34A;
+    --vitmus-sidebar: #0D1B12;
+    --vitmus-content: #F9FAFB;
+    --vitmus-text-secondary: #6B7280;
+  }
+  * {
+    border-color: var(--border);
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }

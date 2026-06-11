@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { usePathname } from 'next/navigation'
 import { AuthGuard } from '@/components/layout/AuthGuard'
-import { Header } from '@/components/layout/Header'
+import { Navbar } from '@/components/layout/Navbar'
 import { Sidebar } from '@/components/layout/Sidebar'
 
 export default function DashboardLayout({
@@ -11,17 +10,19 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const pathname = usePathname()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   return (
     <AuthGuard>
-      <div className="flex min-h-screen">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className="flex flex-1 flex-col bg-vitmus-content">
-          <Header pathname={pathname} onMenuClick={() => setSidebarOpen(true)} />
-          <main className="flex-1 p-4 lg:p-8">{children}</main>
-        </div>
+      <div className="layout-container">
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        />
+        <main className={`main-content ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+          <Navbar isSidebarCollapsed={isSidebarCollapsed} />
+          <div className="main-inner">{children}</div>
+        </main>
       </div>
     </AuthGuard>
   )

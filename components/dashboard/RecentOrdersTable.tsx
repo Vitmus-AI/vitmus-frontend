@@ -3,7 +3,6 @@ import { getFinancialStatusBadge, getOrderStatusBadge } from '@/lib/auth'
 import { formatCurrency, formatDate, getFullName } from '@/lib/format'
 import type { Order } from '@/types'
 import { StatusBadge } from '@/components/ui/status-badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -19,11 +18,11 @@ interface RecentOrdersTableProps {
 
 export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
   return (
-    <Card className="rounded-xl border-vitmus-border shadow-none">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">Órdenes recientes</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="card">
+      <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
+        Órdenes recientes
+      </h2>
+      <div>
         {orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-vitmus-green/10">
@@ -76,7 +75,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
             </Table>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

@@ -1,119 +1,186 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Calendar,
-  LayoutDashboard,
-  LogOut,
-  Plug,
-  ShoppingBag,
-  Users,
-  X,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
+  IconCalendar,
+  IconChevronDown,
+  IconLayoutDashboard,
+  IconMenu2,
+  IconPlug,
+  IconShoppingBag,
+  IconUsers,
+} from '@tabler/icons-react'
 import { useAuth } from '@/hooks/useAuth'
 import { getNavItems } from '@/lib/tenant'
-import { cn } from '@/lib/utils'
+
+interface SubMenuItem {
+  name: string
+  path: string
+  icon?: React.ReactNode
+}
+
+interface MenuItem {
+  name: string
+  icon: React.ReactNode
+  path?: string
+  submenu?: SubMenuItem[]
+}
 
 const iconMap = {
-  dashboard: LayoutDashboard,
-  contacts: Users,
-  orders: ShoppingBag,
-  appointments: Calendar,
-  platforms: Plug,
+  dashboard: IconLayoutDashboard,
+  contacts: IconUsers,
+  orders: IconShoppingBag,
+  appointments: IconCalendar,
+  platforms: IconPlug,
 } as const
 
 interface SidebarProps {
-  isOpen?: boolean
-  onClose?: () => void
+  isCollapsed: boolean
+  onToggleCollapse: () => void
 }
 
-export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+export function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname()
-  const { tenant, logout } = useAuth()
+  const { tenant } = useAuth()
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
+
   const vertical = tenant?.vertical ?? 'hybrid'
-  const navItems = getNavItems(vertical)
+  const menuItems: MenuItem[] = getNavItems(vertical).map((item) => {
+    const Icon = iconMap[item.key]
+    return { name: item.label, icon: <Icon size={20} />, path: item.href }
+  })
+
+  const isActive = (path: string) => pathname === path
+  const hasActiveSubmenu = (submenu?: SubMenuItem[]) =>
+    submenu?.some((item) => pathname === item.path) ?? false
+  const toggleSubmenu = (name: string) =>
+    setOpenSubmenu((open) => (open === name ? null : name))
 
   const initials = tenant?.name
     ? tenant.name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
     : 'V'
 
-  const content = (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between px-6 py-6">
-        <span className="text-xl font-bold tracking-tight text-white">
-          Vitmus<span className="text-vitmus-green">.</span>
-        </span>
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-[#1F2D23] hover:text-white lg:hidden"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        )}
-      </div>
-
-      <nav className="flex-1 space-y-0.5 px-3">
-        {navItems.map((item) => {
-          const Icon = iconMap[item.key]
-          const isActive = pathname === item.href
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className={cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
-                isActive
-                  ? 'border-l-2 border-vitmus-green bg-vitmus-green/15 pl-[10px] text-white'
-                  : 'text-gray-400 hover:bg-[#1F2D23] hover:text-white'
-              )}
-            >
-              <Icon className={cn('h-5 w-5 shrink-0', isActive && 'text-vitmus-green')} />
-              {item.label}
-            </Link>
-          )
-        })}
-      </nav>
-
-      <div className="border-t border-[#1F2D23] p-4">
-        <div className="mb-3 flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-vitmus-green/20 text-xs font-bold text-vitmus-green">
-            {initials}
-          </div>
-          <p className="truncate text-sm font-medium text-white">
-            {tenant?.name ?? 'Mi negocio'}
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          onClick={logout}
-          className="w-full justify-start gap-2 text-gray-400 hover:bg-[#1F2D23] hover:text-white"
-        >
-          <LogOut className="h-4 w-4" />
-          Cerrar sesión
-        </Button>
-      </div>
-    </div>
-  )
-
   return (
-    <>
-      <aside className="hidden h-screen w-60 shrink-0 bg-vitmus-sidebar lg:block">
-        {content}
-      </aside>
-
-      {isOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-          <aside className="absolute left-0 top-0 h-full w-60 bg-vitmus-sidebar shadow-xl">
-            {content}
-          </aside>
+    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+      <div className="flex h-full flex-col">
+        <div className="sidebar-header">
+          {!isCollapsed && (
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
+              Vitmus<span className="text-[var(--color-primary)]">.</span>
+            </h2>
+          )}
+          <button
+            onClick={onToggleCollapse}
+            className="menu-button"
+            aria-label="Alternar menú"
+          >
+            <IconMenu2 size={20} className="text-[var(--color-text-primary)]" />
+          </button>
         </div>
-      )}
-    </>
+
+        <nav className="sidebar-menu custom-scrollbar flex-1 overflow-y-auto">
+          {menuItems.map((item) =>
+            item.submenu ? (
+              <div key={item.name}>
+                <div
+                  className="sidebar-menu-item text-[var(--color-text-primary)] hover:bg-[var(--color-background-gray)]"
+                  onClick={() => toggleSubmenu(item.name)}
+                  title={isCollapsed ? item.name : undefined}
+                  data-active={hasActiveSubmenu(item.submenu)}
+                >
+                  <div className="item-content">
+                    <span className="item-icon">{item.icon}</span>
+                    <span
+                      className={`item-text transition-opacity duration-200 ${
+                        isCollapsed ? 'opacity-0 w-0' : 'opacity-100'
+                      }`}
+                    >
+                      {!isCollapsed && item.name}
+                    </span>
+                  </div>
+                  {!isCollapsed && (
+                    <IconChevronDown
+                      size={16}
+                      className={`transition-transform duration-200 ${
+                        openSubmenu === item.name ? 'rotate-180' : ''
+                      }`}
+                    />
+                  )}
+                </div>
+
+                {!isCollapsed && (
+                  <div
+                    className={`sidebar-submenu bg-[var(--color-background-white)] ${
+                      openSubmenu === item.name
+                        ? 'border-l-2 border-[var(--color-primary)]'
+                        : ''
+                    }`}
+                    style={{
+                      maxHeight:
+                        openSubmenu === item.name
+                          ? `${item.submenu.length * 40}px`
+                          : '0',
+                      transition:
+                        'max-height var(--transition-duration) var(--transition-timing)',
+                    }}
+                  >
+                    {item.submenu.map((subItem) => (
+                      <Link
+                        key={subItem.path}
+                        href={subItem.path}
+                        className="sidebar-submenu-item text-[var(--color-text-primary)] hover:bg-[var(--color-background-gray)]"
+                        data-active={isActive(subItem.path)}
+                      >
+                        <span className="item-icon">{subItem.icon}</span>
+                        <span className="item-text">{subItem.name}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                key={item.name}
+                href={item.path!}
+                className="sidebar-menu-item text-[var(--color-text-primary)] hover:bg-[var(--color-background-gray)]"
+                title={isCollapsed ? item.name : undefined}
+                data-active={isActive(item.path!)}
+              >
+                <div className="item-content">
+                  <span className="item-icon">{item.icon}</span>
+                  <span
+                    className={`item-text transition-opacity duration-200 ${
+                      isCollapsed ? 'opacity-0 w-0' : 'opacity-100'
+                    }`}
+                  >
+                    {!isCollapsed && item.name}
+                  </span>
+                </div>
+              </Link>
+            )
+          )}
+        </nav>
+
+        <div
+          className={`border-t border-[var(--color-border)] p-4 ${
+            isCollapsed ? 'flex justify-center px-2' : ''
+          }`}
+          title={isCollapsed ? tenant?.name ?? 'Mi negocio' : undefined}
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-background-blue)] text-xs font-bold text-[var(--color-primary)]">
+              {initials}
+            </div>
+            {!isCollapsed && (
+              <p className="truncate text-sm font-medium text-[var(--color-text-primary)]">
+                {tenant?.name ?? 'Mi negocio'}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </aside>
   )
 }

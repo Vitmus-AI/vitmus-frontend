@@ -1,8 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Calendar, DollarSign, ShoppingBag, Users } from 'lucide-react'
-import { MetricCard } from '@/components/dashboard/MetricCard'
+import {
+  IconCalendar,
+  IconCurrencyDollar,
+  IconShoppingBag,
+  IconUsers,
+} from '@tabler/icons-react'
+import { StatsCard } from '@/components/ui/StatsCard'
 import { RecentOrdersTable } from '@/components/dashboard/RecentOrdersTable'
 import { RevenueChart } from '@/components/dashboard/RevenueChart'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -64,33 +69,29 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <MetricCard
-          label="Total Contactos"
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          title="Total Contactos"
           value={metrics?.total_contacts ?? 0}
-          icon={Users}
-          accentColor="#22C55E"
+          icon={<IconUsers size={24} />}
         />
         {showOrders && (
-          <MetricCard
-            label="Órdenes este mes"
+          <StatsCard
+            title="Órdenes este mes"
             value={metrics?.orders_this_month ?? 0}
-            icon={ShoppingBag}
-            accentColor="#3B82F6"
+            icon={<IconShoppingBag size={24} />}
           />
         )}
-        <MetricCard
-          label="Facturado este mes"
+        <StatsCard
+          title="Facturado este mes"
           value={formatCurrency(metrics?.revenue_this_month ?? '0')}
-          icon={DollarSign}
-          accentColor="#22C55E"
+          icon={<IconCurrencyDollar size={24} />}
         />
         {showAppointments && (
-          <MetricCard
-            label="Citas hoy"
+          <StatsCard
+            title="Citas hoy"
             value={metrics?.appointments_today ?? 0}
-            icon={Calendar}
-            accentColor="#F97316"
+            icon={<IconCalendar size={24} />}
           />
         )}
       </div>

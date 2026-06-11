@@ -9,7 +9,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/format'
 import type { WeeklyRevenue } from '@/types'
 
@@ -19,11 +18,11 @@ interface RevenueChartProps {
 
 export function RevenueChart({ data }: RevenueChartProps) {
   return (
-    <Card className="rounded-xl border-vitmus-border shadow-none">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">Ventas por semana</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="chart-card">
+      <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
+        Ventas por semana
+      </h2>
+      <div>
         {/* Explicit px height prevents ResponsiveContainer width(-1)/height(-1) warning */}
         <div style={{ width: '100%', height: 288 }}>
           <ResponsiveContainer width="99%" height="100%">
@@ -57,7 +56,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
